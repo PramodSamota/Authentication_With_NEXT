@@ -1,36 +1,62 @@
 import User from "@/models/userModel";
 import bcrypt from "bcryptjs";
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import  connect  from "@/dbConfig/dbconfig";
 
+// Connect to database
+connect();
+export const POST = async (req: NextRequest) => {
+  try {
+    const reqBody = await req.json();
+    const { username, email, password } = reqBody;
 
-
-export const POST = async(req:NextRequest,res:NextResponse) =>{
-    try {
-        const reqBody = await req.json();
-        console.log("reqBody",reqBody)
-        const {username,email,password} = reqBody;
-     
-        //check if user already present
-       const user = await User.findOne({email});
-
-       if(user){
-        return res.json({message:"user is already present"},{status:400});
-       }
-
-
-       //hash password
-
-       const hashedPassword = await bcrypt.hash(password,10);
-
-       const newUser = await User.create({
-        username,
-        email,
-        password:hashedPassword
-       })
-
-       res.json({message:"user create successfully", success:true, newUser})
-
-    } catch (error:any) {
-        return res.json({error:error.message},{status:500})
+    // Validate required fields
+    if (!username || !email || !password) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
     }
-}
+   
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "User already exists with this email" },
+        { status: 409 } // 409 Conflict is more appropriate for duplicate resources
+      );
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const newUser = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    // Return success response without sensitive data
+    return NextResponse.json(
+      {
+        message: "User created successfully",
+        success: true,
+        user: {
+          id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+        },
+      },
+      { status: 201 } // 201 Created for successful resource creation
+    );
+
+  } catch (error: any) {
+    console.error("Signup error:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+};
