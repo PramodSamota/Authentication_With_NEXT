@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -18,10 +19,14 @@ const SignUpPage = () => {
         alert("Please fill in all the fields");
         return;
       }
+
       console.log("user", user);
+
       setLoading(true);
+
       const res = await axios.post("/api/users/signup", user);
       console.log("signUp success", res.data);
+
       router.push("/login");
     } catch (error: any) {
       console.log("signUp Failed", error.message);

@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import User from "@/models/userModel";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import  connect  from "@/dbConfig/dbconfig";
 
 // Connect to database
-connect();
+ await connect();
 export const POST = async (req: NextRequest) => {
   try {
     const reqBody = await req.json();
     const { username, email, password } = reqBody;
-
+       console.log("reqBody", reqBody);
     // Validate required fields
     if (!username || !email || !password) {
       return NextResponse.json(

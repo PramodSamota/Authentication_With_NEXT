@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import Link from "next/link";
 import { useState } from "react";
-
+import axios from "axios";
+import { useRouter } from "next/navigation";
 interface User {
   email: string;
   password: string;
@@ -13,7 +16,24 @@ const LoginPage = () => {
     password: "",
   });
 
-  const handlelogin = () => {};
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const handlelogin = async () => {
+    try {
+      setLoading(true);
+      console.log("user", user);
+      const res = await axios.post("/api/users/login", user);
+
+      console.log("login success", res.data);
+
+      router.push("/profile");
+    } catch (error: any) {
+      console.log("login Failed", error.message);
+      alert("login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex flex-col justify-center h-screen items-center p-4 text-black">
       <div className="flex gap-3 mb-4">
