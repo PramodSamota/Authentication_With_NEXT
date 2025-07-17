@@ -4,10 +4,9 @@ import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import  connect  from "@/dbConfig/dbconfig";
 
-// Connect to database
- await connect();
 export const POST = async (req: NextRequest) => {
   try {
+    await connect();
     const reqBody = await req.json();
     const { username, email, password } = reqBody;
        console.log("reqBody", reqBody);
