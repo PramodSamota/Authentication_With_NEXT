@@ -5,8 +5,9 @@ import jwt from "jsonwebtoken"
 export const getDataFromToken = (request: NextRequest) => {
     try {
         const token = request.cookies.get("token")?.value || ""
-        const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET!)
-        
+        // console.log("token",token)
+        const decodedToken = jwt.verify(token, process.env.TOKEN_SECERT!)
+        // console.log("decodedTokne",decodedToken)
         return decodedToken
     } catch (error:any) {
         throw new Error(error.message)

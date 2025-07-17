@@ -9,7 +9,10 @@ await connect();
 export async function GET(request: NextRequest) {
     try {
         const user:any = await getDataFromToken(request);
-        const foundUser = await User.findOne({ _id: user._id }).select("-password -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry");    
+        // console.log("user",user);
+        const foundUser = await User.findOne({ _id: user.id }).select("-password -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry");   
+
+        console.log("foundUser", foundUser);
         return NextResponse.json({ message: "User found", data: foundUser }, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
